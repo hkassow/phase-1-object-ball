@@ -116,14 +116,16 @@ function gameObject(){
     }
     return stat;
 }
-function numPointsScored(player){
+//some of the helper functions for this assignment 
+function getPlayerList(teamSide){
     let object = gameObject();
-    if (Object.keys(object['home']['players']).includes(player)){
-        return object['home']['players'][player].points;
-    } else {
-        return object['away']['players'][player].points;
-    }
+    let {players} = object[teamSide]
+    return Object.keys(players)
 }
+function numPointsScored(player){
+    return playerStats(player).points
+}
+
 function shoeSize(player){
     let object = gameObject();
     if (Object.keys(object['home']['players']).includes(player)){
@@ -175,19 +177,15 @@ function mostPointsScored(){
     let object = gameObject();
 
     let playerList = getPlayerList('home').concat(getPlayerList('away'));
+    return  playerList.reduce((a,b) => betterScorer(a,b))
 
-    let playerPointsPair = {};
-    playerList.map(player => playerPointsPair[player] = numPointsScored(player));
+    //helper function to compare to players and get better scorer
+    function betterScorer(michael, kobe){
+        return (numPointsScored(michael)< numPointsScored(kobe))? kobe: michael
+    }
     
-    const maxPoints = Math.max.apply(Math, Object.values(playerPointsPair))
-    
-    return playerList.filter(player => numPointsScored(player) === maxPoints)[0];
 }
-function getPlayerList(teamSide){
-    let object = gameObject();
-    let playerList = Object.keys(object[teamSide].players);
-    return playerList
-}
+
 function winningTeam(){
     let object = gameObject();
     //access create list of players then use reduce + (instantly called) function to get total points scored 
@@ -204,14 +202,19 @@ function playerWithLongestName(){
     return longestName; 
 }
 function numSteals(player){
-    const statList = playerStats(player)
-    return statList.steals  
+    const x = playerStats(player)
+    return x.steals
 }
+
 function playerWithMostSteal(){
     let object = gameObject();
-    let homeSteals = getPlayerList('home').reduce((a,b) => Math.max(numSteals(a), numSteals(b)))
-    let awaySteals = getPlayerList('away').reduce((a,b) => Math.max(numSteals(a), numSteals(b)))
-
+    let homeSteals = getPlayerList('home').reduce((a,b) => betterStealer(a,b))
+    let awaySteals = getPlayerList('away').reduce((a,b) => betterStealer(a,b))
+    //betterScorer function restyled
+    function betterStealer(michael, kobe){
+        //takes two players and returns whoever got more steals
+        return (numSteals(michael)< numSteals(kobe))? kobe: michael
+    }
     return (numSteals(homeSteals) < numSteals(awaySteals))? awaySteals: homeSteals;
 }
 function doesLongNameStealATon(){
@@ -219,7 +222,6 @@ function doesLongNameStealATon(){
     let mostSteals = playerWithMostSteal();
     return !!(longestName === mostSteals)
 }
-
 
 console.log(numPointsScored('BrookLopez'))
 console.log(shoeSize('BrookLopez'))
