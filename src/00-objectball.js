@@ -26,10 +26,10 @@ function gameObject(){
                 },
                 BrookLopez: {
                     number:11,
-                    shoe:11,
+                    shoe:17,
                     points:17,
-                    rebounds:17,
-                    assists:19,
+                    rebounds:19,
+                    assists:10,
                     steals:3,
                     blocks:1,
                     slamdunks:15
@@ -128,7 +128,7 @@ function shoeSize(player){
     let object = gameObject();
     if (Object.keys(object['home']['players']).includes(player)){
         return object['home']['players'][player].shoe;
-    } else if (Object.keys(object['home']['players']).includes(player)) {
+    } else if (Object.keys(object['away']['players']).includes(player)) {
         return object['away']['players'][player].shoe;
     } else {
         return 'no player matches this name try again';
@@ -157,31 +157,29 @@ function playerStats(name){
 }
 function bigShoeRebounds(){
     let object = gameObject();
-    let size = 0;
-    let name = '';
-    let teamLoc = '';
-    for (let team in object){
-        console.log(team);
-        for (let player in object[team]['players']){
-            if (size < shoeSize(player)){
-                size = shoeSize(player);
-                name = player;
-                teamLoc = team;
-            }
-        }
-    }
-    console.log(teamLoc);  
-    return object[teamLoc]['players'][name].rebounds;
+    // uses helper function playerList to get an array of all players
+    let playerList = getPlayerList('home').concat(getPlayerList('away'));
+    //creates an object and populates it with pairs of form 
+    //'player: player's rebounds'
+    const playerShoes = {}
+    playerList.forEach(player => playerShoes[player] = shoeSize(player))
+    //finds the biggest sized foot and assigns it to a value
+    const bigFoot = Math.max.apply(Math, Object.values(playerShoes))
+    //finds the player who owns bigFoot
+    const bigPlayer = playerList.find(player => shoeSize(player) === bigFoot)
+    //finds rebounds of player with biggest foot and assigns it
+    const bigRebounds = playerStats(bigPlayer).rebounds
+    return bigRebounds
 }
 function mostPointsScored(){
     let object = gameObject();
 
     let playerList = getPlayerList('home').concat(getPlayerList('away'));
 
-    let testMap = {};
-    playerList.map(player => testMap[player] = numPointsScored(player));
+    let playerPointsPair = {};
+    playerList.map(player => playerPointsPair[player] = numPointsScored(player));
     
-    const maxPoints = Math.max.apply(Math, Object.values(testMap))
+    const maxPoints = Math.max.apply(Math, Object.values(playerPointsPair))
     
     return playerList.filter(player => numPointsScored(player) === maxPoints)[0];
 }
@@ -226,7 +224,15 @@ function doesLongNameStealATon(){
     return !!(longestName === mostSteals)
 }
 
-let test = doesLongNameStealATon();
-console.log(test);
 
-
+console.log(numPointsScored('BrookLopez'))
+console.log(shoeSize('BrookLopez'))
+console.log(teamColors('Brooklyn Nets'))
+console.log(teamNames(gameObject()))
+console.log(playerNumbers('Brooklyn Nets'))
+console.log(playerStats('BrookLopez'))
+console.log(bigShoeRebounds())
+console.log(mostPointsScored())
+console.log(winningTeam())
+console.log(playerWithLongestName())
+console.log(doesLongNameStealATon())
