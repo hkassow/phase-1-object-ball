@@ -204,17 +204,13 @@ function playerWithLongestName(){
     return longestName; 
 }
 function numSteals(player){
-    let object = gameObject();
-    if (Object.keys(object['home']['players']).includes(player)){
-        return object['home']['players'][player].steals;
-    } else {
-        return object['away']['players'][player].steals;
-    }
+    const statList = playerStats(player)
+    return statList.steals  
 }
 function playerWithMostSteal(){
     let object = gameObject();
-    let homeSteals = getPlayerList('home').reduce(function(maxElement, element) { return (numSteals(maxElement) < numSteals(element))? element: maxElement;})
-    let awaySteals = getPlayerList('away').reduce(function(maxElement, element) { return (numSteals(maxElement) < numSteals(element))? element: maxElement;})
+    let homeSteals = getPlayerList('home').reduce((a,b) => Math.max(numSteals(a), numSteals(b)))
+    let awaySteals = getPlayerList('away').reduce((a,b) => Math.max(numSteals(a), numSteals(b)))
 
     return (numSteals(homeSteals) < numSteals(awaySteals))? awaySteals: homeSteals;
 }
