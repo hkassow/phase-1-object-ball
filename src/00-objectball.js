@@ -122,10 +122,16 @@ function getPlayerList(teamSide){
     let {players} = object[teamSide]
     return Object.keys(players)
 }
+function playerStats(name){
+    let object = gameObject();
+    //uses ternary to check if player exists on home team
+    //if he does returns the player object 
+    //because of the way player object is originally setup player object is all of our player stats 
+    return (object.home.players[name])? object.home.players[name]: object.away.players[name];
+}
 function numPointsScored(player){
     return playerStats(player).points
 }
-
 function shoeSize(player){
     let object = gameObject();
     if (Object.keys(object['home']['players']).includes(player)){
@@ -153,10 +159,6 @@ function playerNumbers(name){
     }
     return numbers;
 }
-function playerStats(name){
-    let object = gameObject();
-    return (object.home.players[name])? object.home.players[name]: object.away.players[name];
-}
 function bigShoeRebounds(){
     let object = gameObject();
     // uses helper function playerList to get an array of all players
@@ -166,17 +168,20 @@ function bigShoeRebounds(){
     const playerShoes = {}
     playerList.forEach(player => playerShoes[player] = shoeSize(player))
     //finds the biggest sized foot and assigns it to a value
+    //Math.max.apply is for applying max to an array 
     const bigFoot = Math.max.apply(Math, Object.values(playerShoes))
-    //finds the player who owns bigFoot
+    //searches player list for the player who owns bigFoot
     const bigPlayer = playerList.find(player => shoeSize(player) === bigFoot)
     //finds rebounds of player with biggest foot and assigns it
     const bigRebounds = playerStats(bigPlayer).rebounds
+    //returns rebounds
     return bigRebounds
 }
 function mostPointsScored(){
     let object = gameObject();
-
+    //gets list of players with helper function
     let playerList = getPlayerList('home').concat(getPlayerList('away'));
+    //uses the reduce function and a simple helper function to reduce the list to best scorer
     return  playerList.reduce((a,b) => betterScorer(a,b))
 
     //helper function to compare to players and get better scorer
@@ -185,37 +190,54 @@ function mostPointsScored(){
     }
     
 }
-
 function winningTeam(){
     let object = gameObject();
-    //access create list of players then use reduce + (instantly called) function to get total points scored 
+    //create list of players
+    //use reduce function to add all points score
+    //(instantly called) function to get total points scored 
     const homePoints = getPlayerList('home').reduce(function(accumulator, element){ return numPointsScored(element) + accumulator}, 0);
-    //get away points then use reduce + arrorw function to get total points scored
+    //create list of players
+    //reduce function to add all points scored
+    //used arrow function
     const awayPoints = getPlayerList('away').reduce((accumulator,element) => numPointsScored(element) + accumulator,0);
     // use ternary operator to return team name with more points
     return (homePoints < awayPoints)? object.away.teamName: object.home.teamName;
 }
 function playerWithLongestName(){
     let object = gameObject();
+    //first attempt
     let playerList = getPlayerList('home').concat(getPlayerList('away'));
     let longestName = playerList.filter(player => player.length === Math.max.apply(Math, playerList.map(name => name.length)))[0];
-    return longestName; 
+    //refractor attempt
+    //get total player list
+    let playerList2 = getPlayerList('home').concat(getPlayerList('away'));
+    //reduce function w/ ternary operator as callback function
+    //use ternary operator to compare length then return the longer name
+    const longestName2 = playerList2.reduce((a,b) => (a.length < b.length)? b: a)
+
+    return longestName2; 
 }
 function numSteals(player){
+    //helper function playerStats
     const x = playerStats(player)
     return x.steals
 }
 
 function playerWithMostSteal(){
     let object = gameObject();
+    //get home team players
+    //use reduce to return single element
+    //use helper function betterStealer to compare 2 players steals 
     let homeSteals = getPlayerList('home').reduce((a,b) => betterStealer(a,b))
     let awaySteals = getPlayerList('away').reduce((a,b) => betterStealer(a,b))
+
+    return (numSteals(homeSteals) < numSteals(awaySteals))? awaySteals: homeSteals;
+
     //betterScorer function restyled
     function betterStealer(michael, kobe){
         //takes two players and returns whoever got more steals
         return (numSteals(michael)< numSteals(kobe))? kobe: michael
     }
-    return (numSteals(homeSteals) < numSteals(awaySteals))? awaySteals: homeSteals;
 }
 function doesLongNameStealATon(){
     let longestName = playerWithLongestName();
@@ -223,14 +245,15 @@ function doesLongNameStealATon(){
     return !!(longestName === mostSteals)
 }
 
-console.log(numPointsScored('BrookLopez'))
-console.log(shoeSize('BrookLopez'))
-console.log(teamColors('Brooklyn Nets'))
-console.log(teamNames(gameObject()))
-console.log(playerNumbers('Brooklyn Nets'))
-console.log(playerStats('BrookLopez'))
-console.log(bigShoeRebounds())
-console.log(mostPointsScored())
-console.log(winningTeam())
-console.log(playerWithLongestName())
-console.log(doesLongNameStealATon())
+console.log("numbPointsScored('BrookLopez'):", numPointsScored('BrookLopez'))
+console.log("shoeSize('BrookLopez'):", shoeSize('BrookLopez'))
+console.log("teamColors('Brooklyn Nets'):", teamColors('Brooklyn Nets'))
+console.log("teamNames(gameObject()):", teamNames(gameObject()))
+console.log("playerNumbers('Charlotte Hornets'):", playerNumbers('Charlotte Hornets'))
+console.log("playerNumbers('Brooklyn Nets'):", playerNumbers('Brooklyn Nets'))
+console.log("playerStats('BrookLopez'):", playerStats('BrookLopez'))
+console.log("bigShoeRebounds():", bigShoeRebounds())
+console.log("mostPointsScored():", mostPointsScored())
+console.log("winningTeam():", winningTeam())
+console.log("playerWithLongestName():", playerWithLongestName())
+console.log("doesLongNameStealATon():", doesLongNameStealATon())
