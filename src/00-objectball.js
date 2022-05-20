@@ -1,5 +1,5 @@
 function gameObject(){
-    const stat = {
+    const z = {
         home: {
             teamName:'Brooklyn Nets',
             colors:['Black', 'White'],
@@ -114,7 +114,7 @@ function gameObject(){
             }
         }
     }
-    return stat;
+    return z;
 }
 //some of the helper functions for this assignment 
 function getPlayerList(teamSide){
@@ -130,7 +130,15 @@ function playerStats(name){
     return (object.home.players[name])? object.home.players[name]: object.away.players[name];
 }
 function numPointsScored(player){
+    //using helper function player stats
     return playerStats(player).points
+
+    //without utilizing helper function
+    let object = gameObject();
+    // uses ternary operator to ask if player is on home team 
+    let side = ((object.home.players[player])? 'home': 'away')
+    //using bracket notation for variables player and side
+    return object[side].players[player].points
 }
 function shoeSize(player){
     let object = gameObject();
