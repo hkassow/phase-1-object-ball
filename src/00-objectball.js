@@ -1,5 +1,5 @@
 function gameObject(){
-    const z = {
+    const gameStats = {
         home: {
             teamName:'Brooklyn Nets',
             colors:['Black', 'White'],
@@ -114,10 +114,11 @@ function gameObject(){
             }
         }
     }
-    return z;
+    return gameStats;
 }
-//some of the helper functions for this assignment 
+//get player list is helper function for grabbing player list
 function getPlayerList(teamSide){
+    //team side 'home' or 'away'
     let object = gameObject();
     let {players} = object[teamSide]
     return Object.keys(players)
@@ -125,8 +126,8 @@ function getPlayerList(teamSide){
 function playerStats(name){
     let object = gameObject();
     //uses ternary to check if player exists on home team
-    //if he does returns the player object 
-    //because of the way player object is originally setup player object is all of our player stats 
+    //if he does returns the chain using home team 
+    //if not returns using away team
     return (object.home.players[name])? object.home.players[name]: object.away.players[name];
 }
 function numPointsScored(player){
@@ -235,6 +236,7 @@ function playerWithMostSteal(){
     let object = gameObject();
     //get home team players
     //use reduce to return single element
+    //reduce takes callback function and could take starting element
     //use helper function betterStealer to compare 2 players steals 
     let homeSteals = getPlayerList('home').reduce((a,b) => betterStealer(a,b))
     let awaySteals = getPlayerList('away').reduce((a,b) => betterStealer(a,b))
